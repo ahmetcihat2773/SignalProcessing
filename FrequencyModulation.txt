@@ -1,0 +1,85 @@
+clear all;
+close all;
+
+tin=0.15;
+Fs=2000;
+
+t1=0:1/Fs:tin/3;
+t2=tin/3:1/Fs:2*tin/3;
+t3=2*tin/3:1/Fs:tin;
+
+len1=length(t1);
+len2=length(t2);
+len3=length(t3);
+
+for i=1:len1
+   
+  me1(i)=1; 
+  me2(i)=-2;
+  me3(i)=0;
+   
+   
+end
+
+me=[me1 me2 me3];
+
+t=[t1 t2 t3];
+
+f=linspace(-Fs/2,Fs/2,length(me));
+
+fc=200;
+
+carrie=cos(2*pi*fc*t);
+
+kf=50;%deviation constant
+
+
+
+
+
+
+integme=integro(me);
+
+modulate=cos(2*pi*fc*t+(2*pi*kf*integme));
+
+
+figure(2);
+plot(t,integme);
+title('Integral of Message Signal');
+figure(3);
+subplot(211);
+plot(t,me);
+title('Message Signal');
+subplot(212);
+plot(t,modulate);
+title('fm modulation signal');
+
+ffme=fftshift(fft(me,length(me)))/length(me);
+
+ffmodulate=fftshift(fft(modulate,length(me)))/length(me);
+
+figure(15);
+plot(f,abs(ffme));
+hold on;
+plot(f,abs(ffmodulate));
+legend('message','modulated');
+
+
+
+
+function reslt=integro(x)
+Fs=2000;
+dt=1/Fs;
+result1=0;
+for i=1:length(x);
+   
+    result1=result1+(x(i)*dt);
+   result(i)=result1;
+end
+
+reslt=result;
+
+
+end
+
+%http://acihatbozkurt.blogspot.com/2018/04/frequency-modulation.html

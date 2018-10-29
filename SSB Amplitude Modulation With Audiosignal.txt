@@ -1,0 +1,117 @@
+clear all;
+close all;
+Fs=8000;
+fc=3000;
+
+duration=4.9902;
+t=0:1/Fs:duration;
+me=audioread('speech_dft_8kHz.wav');
+me=me';
+len=length(me);
+f=linspace(-Fs/2,Fs/2,len);
+
+%Message signal in time domain
+plot(t,me);
+title('Sound Signal');
+%/////////////////////////
+% frequency response of message signal
+ffme=fftshift(fft(me,len))/len;
+figure(5);
+plot(f,abs(ffme));
+title('Frequency response of message signal');
+%///////////////////////////////////////
+
+carrie=5*cos(2*pi*t*fc);%carrier
+modulated=me.*carrie;%modulation
+
+
+
+%construtc a filter in order to obtain Upper side
+%band of modulation signal.
+n=10;
+Wn=2*fc/Fs;
+[b,a]=butter(n,Wn,'high');
+%filter magnitude response
+[h,w]=freqz(b,a,len);
+h=freqz(b,a,w);
+figure(12);
+plot(f,abs(h));
+title('Magnitude Response of Filter');
+%//////////////////////////////
+
+%Frequency response of modulated signal;
+ffmodulated=fftshift(fft(modulated,len))/len;
+figure(3);
+plot(f,abs(ffmodulated));
+title('frequency response of modulated signal');
+%///////////////////////////////////////////
+
+
+%Obtaining the USB signal by hilbert transform
+hil=imag(hilbert(me,len));
+%You might ask yourself why we use imag function
+%here the answer is very simple and easy just
+% write hilbert to the help and read it
+%it is easy to understand.
+
+USB=me.*cos(2*pi*t*fc)-hil.*sin(2*pi*fc*t);
+ffUSB=fftshift(fft(USB,len))/len;
+
+
+%Frequency response of upper side band signal
+%with two different method
+upperside=filter(b,a,modulated);
+ffupperside=fftshift(fft(upperside,len))/len;
+figure(4);
+subplot(211)
+plot(f,abs(ffupperside));
+title('Frequency response of upper side band with filter');
+subplot(212)
+plot(f,abs(ffUSB));
+title('Frequency response of upper side band with Hilberet');
+%////////////////////////////////////////////
+
+%//////////////////DEMODULATION PART///////////
+%////////Construct a low pass filter//////////
+fm=800;% this cutoff frequency is adjusted by checking the frequency response of message signal.
+Wn2=2*fm/Fs;
+[c,d]=butter(n,Wn2,'low');
+upperside=upperside.*carrie;
+USB=USB.*carrie;
+%before filtering we have to multiply with a
+% signal whose frequency same as carrier signal
+%In this lab phase are assumed to be same.
+reconme=filter(c,d,upperside);%with hilbert
+reconme2=filter(c,d,USB);%with filter
+%////////////////////Filter Magnitude Response
+figure(1552);
+[h1,w1]=freqz(c,d,len);
+h1=freqz(c,d,w1);% return the frequency response
+plot(abs(h1));
+title('Magnitude response of filter');
+
+
+
+%Message signal and demodulated signal freq resp
+figure(1523);
+ffreconme2=fftshift(fft(reconme2,len))/len;
+subplot(211);
+plot(f,abs(ffreconme2));;
+title('Demodulated Signal frequency response');
+subplot(212);
+plot(f,abs(ffme));
+title('Message signal frequency response');
+%////////////////////////////////////////////
+
+figure(263);
+subplot(311)
+plot(t,reconme);
+title('With Hilbert');
+subplot(312);
+plot(t,reconme2);
+title('With Filter');
+subplot(313);
+plot(t,me);
+title('Original Message Signal');
+sound(reconme2);
+%http://acihatbozkurt.blogspot.com/2018/05/ssb-amplitude-modulation-with.html

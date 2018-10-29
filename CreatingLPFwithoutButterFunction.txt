@@ -1,0 +1,62 @@
+clear all;
+close all;
+        %frequencies
+f1=100; 
+f2=200;
+fc=150; % Low Pass Filter 3db Frequency(Cutoff Frequency)
+Fs=1000;%Sampling Frequency
+t=0:1/Fs:0.05;% the time domain
+f=linspace(-Fs/2,Fs/2,1024);% the frequency domain.
+
+x=2*cos(2*pi*f1.*t)+1.5*sin(2*pi.*f2*t);%our signal
+%Parameters to create Low pass filter by ourselves.
+i=1;
+h=0;
+%To create LPF whose cutt off frequency is 150 I use
+% for loop and if else statement
+% I create the LPF in frequency domain
+% LPF is 1 between -150 and 150 and 0 otherwise.
+for f3=-500:523
+  
+    if (f3>=-150)&(f3<=150)
+    
+      h(i)=1;
+         i=i+1;
+   
+    
+    else
+       h(i)=0;
+    i=i+1;
+end
+   
+end
+%Plotting Low Pass Filter h
+plot(f,h);
+title('Low pass filter');
+
+%Xf is representation of signal in frequency domain
+%it was defined in time domain
+Xf=fft(x,1024);
+Xf=fftshift(Xf)/length(x);
+% Some of student make a mistake while they
+% are normalizing the transferred signal by dividing 
+%sampling frequency rather than length of signal
+
+% Now We are filtering our signal by Low pass filter(h)
+% to do this we are multiplying our signal(Xf) with 
+%low pass filter.Both of them are  in frequency domain
+FilteredX=Xf.*h;
+figure(2);
+plot(f,(abs(FilteredX)));
+subplot(3,1,1);
+
+plot(f,abs(Xf));
+title('Original Signal in Frequency Domain Xf');
+subplot(3,1,2);
+
+plot(f,h);
+title('Low Pass Filter h');
+subplot(3,1,3);
+
+plot(f,(abs(FilteredX)));
+title('Filtered Signal by LPF');

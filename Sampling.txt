@@ -1,0 +1,73 @@
+clear all
+close all
+
+t = 0 : 0.001 : 0.2 ;% time domain
+f = 50 ;% cut off frequency
+x = sin(2*pi*f.*t) ;% signal
+Fs = 250 ;% sampling frequency
+T = 0.004 ;% System produce a data for every 4ms.
+plot(t,x);
+hold on
+
+for i = 0 : length(t)-1%% with this loop pulse train is procuded
+if rem(i,4)==0
+    pulse_train(i+1)=1;
+else
+    pulse_train(i+1)=0;
+end
+end
+x1=x.*pulse_train;%%Signal and pulse train is multiplied
+% and sampled datum assign to x1
+stem(t,x1);%% The signal which has sampled datum is plotted.
+% stem function is used for plot the discrete signals
+j=1;
+for i = 0 : length(t)-1
+      % now with this loop we arease
+         %the elements which are 0 in sampled signal
+        
+    if rem(i,4)==0
+       x_discrete(j) = x1(i+1); 
+       n(j) = t(i+1);
+       j=j+1;
+     end
+end
+figure(2);
+stem(n,x_discrete);
+
+%Sampling Frequencies
+Fs1 = 75 ;
+Fs2 = 250 ;
+Fs3 = 5000 ;
+
+%for different sampling frequency
+%we create different time domain.
+
+n1 = 0 : 1/Fs1 : 0.2 ;
+n2 = 0 : 1/Fs2 : 0.2 ;
+n3 = 0 : 1/Fs3 : 0.2 ;
+
+Spline1 = interp1( n ,x_discrete ,n1 ,'spline' ) ;
+Spline2 = interp1( n ,x_discrete ,n2 ,'spline' ) ;
+Spline3 = interp1( n ,x_discrete ,n3 ,'spline' ) ;
+% By increasing sampling frequency we can obtain
+% our original signal as almost exactly the same.
+figure(3);
+subplot(311); plot(n1,Spline1);
+subplot(312); plot(n2,Spline2);
+subplot(313); plot(n3,Spline3);
+
+N=1024;
+fftx1=abs(fftshift(fft(Spline1,N))/N);
+fftx2=abs(fftshift(fft(Spline2,N))/N);
+fftx3=abs(fftshift(fft(Spline3,N))/N);  
+
+f1=linspace(-Fs1/2,Fs1/2,1024);
+f2=linspace(-Fs2/2,Fs2/2,1024);
+f3=linspace(-Fs3/2,Fs3/2,1024);
+
+figure(4);
+subplot(311); plot(f1,fftx1);
+subplot(312); plot(f2,fftx2);
+subplot(313); plot(f3,fftx3);
+
+%http://acihatbozkurt.blogspot.com/2018/03/sampling.html

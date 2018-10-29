@@ -1,0 +1,54 @@
+clear all;
+close all
+
+fm=120;%Frequency of message signal
+fc=1200;%frequency of carrier signal
+T=1/fm;% period of message signal
+Fs=120000;%Sampling frequency
+
+t=0:1/Fs:5*T;% time domain
+
+m=5*cos(2*pi*fm*t);%message signal;
+
+c=cos(2*pi*fc*t);%carrier signal;
+
+plot(t,m);
+
+hold on ;
+plot(t,c);
+title('Message signal and Carrier signal ');
+N=length(m);
+%///////////////Modulation
+f=linspace(-Fs/2,Fs/2,N);% frequency domain
+Modsi=m.*c;% modulated signal
+% Plotting the Modulated Signal in time domain And
+% in frequency domain.
+figure(2);
+subplot(2,1,1);
+plot(t,Modsi);
+title('Modulated Signal');
+Xmosi=fftshift(fft(Modsi,N))/length(Modsi);
+subplot(2,1,2);
+plot(f,abs(Xmosi));
+xlim([-2000 2000]);
+title('Modulated Signal in Frequency domain ');
+
+%//////////////Part2
+Wn=(2*fc)/Fs;%Normalizing factor of filter
+order=5;% order of filter
+dene=2*cos(2*pi*t*fc);% to demodulate we multiply our
+%modulated signal with cos(2*pi*t*fc);
+dene2=dene.*Modsi;
+[a,b]=butter(order,Wn,'low');%creating low pass signal
+Filtereddemod=filter(a,b,dene2);%Sending our
+%signal which we multiply modulated signal by cos(2*pi*t*fc)
+
+%Plotting Message signal and Demodulated Signal
+figure(3);
+plot(t,m);
+hold on;
+plot(t,Filtereddemod);
+
+title('Demodulated and Original Signals');
+
+%http://acihatbozkurt.blogspot.com/2018/03/modulation-and-demodulation.html

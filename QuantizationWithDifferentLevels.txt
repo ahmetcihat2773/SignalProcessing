@@ -1,0 +1,69 @@
+clear all;
+close all;
+clc;
+A=audioread('speech_dft_8kHz.wav') ;
+
+Fs=8e3;%sample frequency
+T=4.9902e-3; %duration
+t1=0:(1/Fs):T; %time domain
+a=max(A);%maximum of speech signal
+b=min(A);%minimum of speech signal.
+
+%Number of quantization levels.
+N1=2;
+N2=4;
+N3=7;
+
+
+
+dem=b-a;
+dem1=2^N1;
+dem2=2^N2;
+dem3=2^N3;
+
+XQ1=floor(((A-a)*dem1/dem))*(dem/dem1)+a;
+
+XQ2=floor(((A-a)*dem2/dem))*(dem/dem2)+a;
+
+
+XQ3=floor(((A-a)*dem3/dem))*(dem/dem3)+a;
+
+sound(XQ3)
+figure(12);
+subplot(411);
+plot(XQ1);
+title('2 bit')
+subplot(412);
+plot(XQ2);
+title('4 Bit');
+subplot(413);
+plot(XQ3);
+title('7 bit')
+subplot(414);
+plot(A);
+title('original signal');
+
+Eror1=A-XQ1;
+Eror2=A-XQ2;
+Eror3=A-XQ3;
+
+figure(15);
+
+subplot(311);
+plot(Eror1,'r');
+hold on;
+plot(A,'g');
+title('Original signal is green Quantization level is 2');
+
+subplot(312);
+plot(Eror2,'r');
+hold on;
+plot(A,'g');
+title('Original signal is green Quantization level is 4');
+
+subplot(313);
+plot(Eror3,'r');
+hold on;
+plot(A,'g');
+title('Original signal is green Quantization level is 7');
+

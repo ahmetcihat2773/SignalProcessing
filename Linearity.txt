@@ -1,0 +1,47 @@
+close all;
+clear all;
+%filter coefficients
+a=[0.3 -0.14];
+b=[1 0.8 0.22];
+
+[h5,w5]=freqz(a,b);
+h5=freqz(a,b,w5);
+
+plot(abs(h5));
+Fs=3000;
+t=0:1/Fs:1;
+%Signals
+x1=sin(2*pi*5*t).*power(t,0.5);
+x2=(1-t).*cos(2*pi*9*t);
+
+x3=x1+x2;%input for determining the linearity
+x1filt=filter(a,b,x1);% x1(t) is filtering thanks to filter coefficients.
+x2filt=filter(a,b,x2);%x2(t) is filtering thanks to filter coefficients.
+x3filt=filter(a,b,x3);%x1(t)+x2(t) is filtering thanks to filter coefficient
+y12=x1filt+x2filt;%y12 is output of filtered (x1(t)+x2(t))
+
+%We filter the signals separately and then
+%we add filtered signals up.Than we filter
+%the sum of signals %than compare the 
+%result of these two way with plotting the
+%result which shows us filtering is a 
+%linear operation.
+
+subplot(2,1,1);
+plot(t,x3filt);
+
+subplot(2,1,2);
+plot(t,y12);
+
+%http://acihatbozkurt.blogspot.com/2018/03/checking-linearity-of-filter-operation.html
+
+
+
+
+
+
+
+
+
+
+

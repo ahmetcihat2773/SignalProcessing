@@ -1,0 +1,106 @@
+clear all ;
+close all;
+clc;
+%Cutoff frequencies
+f1=500;
+f2=2000;
+%Sampling Frequencies 
+Fs1=36e3; 
+Fs2=12e3;
+Fs3=6e3;
+%Duration of Signal
+duration=5e-3;
+%Time domain for different sampling frequencies.
+n1=0:1/Fs1:duration;
+n2=0:1/Fs2:duration;
+n3=0:1/Fs3:duration;
+
+%Different sampled signal.
+x1=cos(2*pi*f1*n1)+sin(2*pi*f2*n1);
+x2=cos(2*pi*f1*n2)+sin(2*pi*f2*n2);
+x3=cos(2*pi*f1*n3)+sin(2*pi*f2*n3);
+%Figures
+subplot(311);
+plot(n1,x1);
+title('Sample Frequency 36kHz');
+
+
+subplot(312);
+plot(n2,x2);
+title('Sample Frequency 12kHz');
+
+
+subplot(313);
+plot(n3,x3);
+title('Sample Frequency 6kHz');
+
+
+len=1024;
+
+f11=linspace(-Fs1/2,Fs1/2,1024);
+f22=linspace(-Fs2/2,Fs2/2,1024);
+f33=linspace(-Fs3/2,Fs3/2,1024);
+%FFT of Signals
+X1=fft(x1,len);
+X1mag=abs(X1)/len;
+
+X2=fft(x2,len);
+X2mag=abs(X2)/len;
+
+X3=fft(x3,len);
+X3mag=abs(X3)/len;
+
+figure(2);
+%Frequency Response Figures
+subplot(311);
+plot(f11,fftshift(X1mag));
+title('Sample Frequency 36kHz');
+
+subplot(312);
+plot(f22,fftshift(X2mag));
+title('Sample Frequency 12kHz');
+
+subplot(313);
+plot(f33,fftshift(X3mag));
+title('Sample Frequency 6kHz');
+
+%Interpolation of sampled signals
+
+inter1sp=interp1(n2,x2,n1,'spline');
+inter1cub=interp1(n2,x2,n1,'cubic');
+% n2 x2 time domain of sampled signal and
+% sampled signal n1 is the domain that we want to
+%interpolate the signal into that domain.
+%Interpolated Signals Figures
+figure(5);
+plot(n1,inter1sp,'o');
+hold on;
+plot(n1,inter1cub,'*');
+hold on;
+plot(n1,x1);
+title('Fs 12k');
+
+
+inter2sp=interp1(n3,x3,n1,'linear');
+inter2cub=interp1(n3,x3,n1,'spline');
+figure(6);
+plot(n1,inter2sp,'o');
+hold on;
+plot(n1,inter2cub,'*');
+hold on;
+plot(n1,x1);
+title('Fs 6K')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
