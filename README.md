@@ -1,1 +1,6 @@
-# SignalProcessing
+
+# Smoothing Image
+
+The purpose of the smoothing operation is removing small details during object extraction, filling the small gaps in curves or lines. Also decreasing the noise affact is one of the main purpose of the smoothing. Noises might occur because of the image sensor, digital camera etc. Sudden changes among the pixels are observable more easily. In general, denoising an image is nothing but applying a low pass filter to remove the rapid changes. Low pass filters allow low frequencies and attenuate high frequencies. Rapid changes among the pixels are indicated as high-frequency components that's why low pass filters have to be applied to remove these high-frequency components or noises. Since images are 2D signals, filters which are called kernels have to be thought as 2D signal. Convolution is nothing but swipping the kernel on image and multiplying each pixel with corresponding kernel pixel. After that summing all the multiplication and dividing the result of the sum by summation of each kernel coefficients to normalize the result. Below w is the kernel and f(x,y) is the original image [[1]](https://en.wikipedia.org/wiki/Kernel_(image_processing)).   
+
+![alt text](https://github.com/ahmetcihat2773/SignalProcessing/blob/master/conv.PNG)
